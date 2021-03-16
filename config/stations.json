@@ -1,0 +1,23 @@
+[
+	{"KEY": "ACR", "NAME": "Absolute Classic Rock", "STREAM": "", "IMG": "png"},
+	{"KEY": "B1X", "NAME": "BBC Radio 1Xtra", "STREAM": "", "IMG": "png"},
+	{"KEY": "B4D", "NAME": "BBC Radio 4", "STREAM": "", "IMG": "png"},
+	{"KEY": "B4L", "NAME": "BBC Radio 4 LW", "STREAM": "", "IMG": "jpg"},
+	{"KEY": "B4X", "NAME": "BBC Radio 4Xtra", "STREAM": "", "IMG": "jpg"},
+	{"KEY": "B5L", "NAME": "BBC Radio 5 Live", "STREAM": "", "IMG": "jpg"},
+	{"KEY": "B5S", "NAME": "BBC Radio 5 Live Sports Extra", "STREAM": "", "IMG": "jpg"},
+	{"KEY": "BBR", "NAME": "BBC Radio Bristol", "STREAM": "", "IMG": "png"},
+	{"KEY": "BLN", "NAME": "BBC Radio London", "STREAM": "", "IMG": "jpg"},
+	{"KEY": "BR1", "NAME": "BBC Radio 1", "STREAM": "", "IMG": "jpg"},
+	{"KEY": "BR2", "NAME": "BBC Radio 2", "STREAM": "", "IMG": "jpg"},
+	{"KEY": "BR3", "NAME": "BBC Radio 3", "STREAM": "", "IMG": "png"},
+	{"KEY": "CLA", "NAME": "Classic FM", "STREAM": "", "IMG": "png"},
+	{"KEY": "GLN", "NAME": "Gold FM", "STREAM": "", "IMG": "png"},
+	{"KEY": "HBR", "NAME": "Heart Radio Bristol", "STREAM": "", "IMG": "png"},
+	{"KEY": "HLN", "NAME": "Heart Radio London", "STREAM": "", "IMG": "png"},
+	{"KEY": "JAZ", "NAME": "Jazz FM", "STREAM": "", "IMG": "png"},
+	{"KEY": "LLN", "NAME": "LBC", "STREAM": "", "IMG": "jpg"},
+	{"KEY": "LNL", "NAME": "LBC", "STREAM": "", "IMG": "jpg"},
+	{"KEY": "LNU", "NAME": "LBC", "STREAM": "", "IMG": "jpg"},
+	{"KEY": "LUK", "NAME": "LBC", "STREAM": "", "IMG": "jpg"}
+]
