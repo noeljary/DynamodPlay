@@ -15,7 +15,7 @@ class Album:
 
 	#----------------------------------------------------------------------
 	def addTrack(self, track):
-		if not track in self.tracks:
+		if not self.getTrack(track.getId()):
 			self.tracks.append(track)
 
 	#----------------------------------------------------------------------
@@ -51,8 +51,10 @@ class Album:
 		return self.year
 
 	#----------------------------------------------------------------------
-	def getTrack(self, track):
-		return self.track[track] if track in self.tracks.keys() else None
+	def getTrack(self, id):
+		for track in self.tracks:
+			if track.getId() == id:
+				return track
 
 	#----------------------------------------------------------------------
 	def getTracks(self):

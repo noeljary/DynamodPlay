@@ -13,30 +13,34 @@ class Library:
 
 	#----------------------------------------------------------------------
 	def addAlbum(self, album):
-		if not album in self.albums:
+		if not self.getAlbum(album.getId()):
 			self.albums.append(album)
 
 	#----------------------------------------------------------------------
 	def addArtist(self, artist):
-		if not artist in self.artists:
+		if not self.getArtist(artist.getId()):
 			self.artists.append(artist)
 
 	#----------------------------------------------------------------------
 	def addTrack(self, track):
-		if not track in self.tracks:
+		if not self.getTrack(track.getId()):
 			self.tracks.append(track)
 
 	#----------------------------------------------------------------------
-	def getAlbum(self, album):
-		return self.albums[album] if album in self.albums.keys() else None
+	def getAlbum(self, id):
+		for album in self.albums:
+			if album.getId() == id:
+				return album
 
 	#----------------------------------------------------------------------
 	def getAlbums(self):
 		return self.albums
 
 	#----------------------------------------------------------------------
-	def getArtist(self, artist):
-		return self.artists[artist] if artist in self.artists.keys() else None
+	def getArtist(self, id):
+		for artist in self.artists:
+			if artist.getId() == id:
+				return artist
 
 	#----------------------------------------------------------------------
 	def getArtists(self):
@@ -63,8 +67,10 @@ class Library:
 		return len(self.tracks)
 
 	#----------------------------------------------------------------------
-	def getTrack(self, track):
-		return self.track[track] if track in self.tracks.keys() else None
+	def getTrack(self, id):
+		for track in self.tracks:
+			if track.getId() == id:
+				return track
 
 	#----------------------------------------------------------------------
 	def getTracks(self):

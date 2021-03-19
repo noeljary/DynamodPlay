@@ -19,53 +19,43 @@ class PlexBrowser:
 		if cls._instance is None:
 			cls._instance = super(PlexBrowser, cls).__new__(cls)
 
-			cls.content   = {"LIBRARIES": {}, "ARTISTS": {}, "ALBUMS": {}, "TRACKS": {}}
+			cls.libraries = []
 
 		return cls._instance
 
 	#----------------------------------------------------------------------
-	def getAlbums(self, library):
-		keys = library.keys()
-		if "ARTIST" in keys and "LIBRARY" in keys:
-			return self.getAlbumsByArtist(library["LIBRARY"], library["ARTIST"])
-		elif "LIBRARY" in keys:
-			return self.getAlbumsByLibrary(library["LIBRARY"])
+	def getAlbums(self, parents):
+		if "ARTIST" in parents.keys():
+			return self.getAlbumsByArtist(parents["LIBRARY"], parents["ARTIST"])
+		else:
+			return self.getAlbumsByLibrary(parents["LIBRARY"])
 
 	#----------------------------------------------------------------------
 	def getAlbumsByArtist(self, library, artist):
-		if not self.content["ARTISTS"][artist].getAlbums():
-			self.loadAlbumsByArtist(library, artist)
+		if not self.getLibrary(library).getArtist(artist).getAlbums():
+			self.loadAlbumsByArtist(self.getLibrary(library), self.getLibrary(library).getArtist(artist))
 
-		albums = []
-		for album in self.content["ARTISTS"][artist].getAlbums():
-			albums.append(self.content["ALBUMS"][album].toDict())
+		albums = self.mediaObjToDict(self.getLibrary(library).getArtist(artist).getAlbums())
 
 		return {"LIBRARY": library, "ARTIST": artist, "ALBUMS": albums}
 
 	#----------------------------------------------------------------------
 	def getAlbumsByLibrary(self, library):
-		if not self.content["LIBRARIES"][library].getAlbums():
-			self.loadAlbumsByLibrary(library)
-		
-		albums = []
-		for album in self.content["LIBRARIES"][library].getAlbums():
-			albums.append(self.content["ALBUMS"][album].toDict())
+		if not self.getLibrary(library).getAlbums():
+			self.loadAlbumsByLibrary(self.getLibrary(library))
+
+		albums = self.mediaObjToDict(self.getLibrary(library).getAlbums())
 
 		return {"LIBRARY": library, "ALBUMS": albums}
 
 	#----------------------------------------------------------------------
-	def getArtists(self, library):
-		if "LIBRARY" not in library.keys():
-			return
+	def getArtists(self, parents):
+		if not self.getLibrary(parents["LIBRARY"]).getArtists():
+			self.loadArtists(self.getLibrary(parents["LIBRARY"]))
 
-		if not self.content["LIBRARIES"][library["LIBRARY"]].getArtists():
-			self.loadArtists(library["LIBRARY"])
-		
-		artists = []
-		for artist in self.content["LIBRARIES"][library["LIBRARY"]].getArtists():
-			artists.append(self.content["ARTISTS"][artist].toDict())
+		artists = self.mediaObjToDict(self.getLibrary(parents["LIBRARY"]).getArtists())
 
-		return {"LIBRARY": library["LIBRARY"], "ARTISTS": artists}
+		return {"LIBRARY": parents["LIBRARY"], "ARTISTS": artists}
 
 	#----------------------------------------------------------------------
 	def getKey(self):
@@ -73,57 +63,74 @@ class PlexBrowser:
 
 	#----------------------------------------------------------------------
 	def getLibraries(self):
-		if not self.content["LIBRARIES"]:
+		if not self.libraries:
 			self.loadLibraries()
 
-		libraries = []
-		for library in self.content["LIBRARIES"].keys():
-			libraries.append(self.content["LIBRARIES"][library].toDict())
+		libraries = self.mediaObjToDict(self.libraries)
 
 		return {"LIBRARIES": libraries}
 
 	#----------------------------------------------------------------------
-	def getTracks(self, hierarchy):
-		keys = hierarchy.keys()
-		if "ALBUM" in keys and "LIBRARY" in keys:
-			return self.getTracksByAlbum(hierarchy["LIBRARY"], hierarchy["ALBUM"])
-		elif "ARTIST" in keys and "LIBRARY" in keys:
-			return self.getTracksByArtist(hierarchy["LIBRARY"], hierarchy["ARTIST"])
+	def getLibrary(self, library):
+		for lib in self.libraries:
+			if lib.getId() == library:
+				return lib
+
+	#----------------------------------------------------------------------
+	def getTracks(self, parents):
+		keys = parents.keys()
+		if "ARTIST" in keys and "ALBUM" in keys:
+			return self.getTracksByArtistAlbum(parents["LIBRARY"], parents["ARTIST"], parents["ALBUM"])
+		elif "ALBUM" in keys:
+			return self.getTracksByAlbum(parents["LIBRARY"], parents["ALBUM"])
+		elif "ARTIST" in keys:
+			return self.getTracksByArtist(parents["LIBRARY"], parents["ARTIST"])
 		elif "LIBRARY" in keys:
-			return self.getTracksByLibrary(hierarchy["LIBRARY"])
+			return self.getTracksByLibrary(parents["LIBRARY"])
 
 	#----------------------------------------------------------------------
-	def getTracksByAlbum(self, library, album):
-		if not self.content["ALBUMS"][album].getTracks():
-			self.loadTracksByAlbum(library, album)
+	def getTracksByAlbum(self, lib_id, al_id):
+		library = self.getLibrary(lib_id)
+		album   = library.getAlbum(al_id)
+		if not album.getTracks():
+			self.loadTracksByParent(library, album)
 
-		tracks = []
-		for track in self.content["ALBUMS"][album].getTracks():
-			tracks.append(self.content["TRACKS"][track].toDict())
+		tracks = self.mediaObjToDict(album.getTracks())
 
-		return {"LIBRARY": library, "ALBUM": album, "TRACKS": tracks}
-
-	#----------------------------------------------------------------------
-	def getTracksByArtist(self, library, artist):
-		if not self.content["ARTISTS"][artist].getTracks():
-			self.loadTracksByArtist(library, artist)
-
-		tracks = []
-		for track in self.content["ARTISTS"][artist].getTracks():
-			tracks.append(self.content["TRACKS"][track].toDict())
-
-		return {"LIBRARY": library, "ARTIST": artist, "TRACKS": tracks}
+		return {"LIBRARY": lib_id, "ALBUM": al_id, "TRACKS": tracks}
 
 	#----------------------------------------------------------------------
-	def getTracksByLibrary(self, library):
-		if not self.content["LIBRARIES"][library].getTracks():
+	def getTracksByArtist(self, lib_id, ar_id):
+		library = self.getLibrary(lib_id)
+		artist  = library.getArtist(ar_id)
+		if not artist.getTracks():
+			self.loadTracksByParent(library, artist)
+
+		tracks = self.mediaObjToDict(artist.getTracks())
+
+		return {"LIBRARY": lib_id, "ARTIST": ar_id, "TRACKS": tracks}
+
+	#----------------------------------------------------------------------
+	def getTracksByArtistAlbum(self, lib_id, ar_id, al_id):
+		library = self.getLibrary(lib_id)
+		artist  = library.getArtist(ar_id)
+		album   = artist.getAlbum(al_id)
+		if not album.getTracks():
+			self.loadTracksByParent(library, album)
+
+		tracks = self.mediaObjToDict(album.getTracks())
+
+		return {"LIBRARY": lib_id, "ARTIST": ar_id, "ALBUM": al_id, "TRACKS": tracks}
+
+	#----------------------------------------------------------------------
+	def getTracksByLibrary(self, lib_id):
+		library = self.getLibrary(lib_id)
+		if not library.getTracks():
 			self.loadTracksByLibrary(library)
 
-		tracks = []
-		for track in self.content["LIBRARIES"][library].getTracks():
-			tracks.append(self.content["TRACKS"][track].toDict())
+		tracks = self.mediaObjToDict(library.getTracks())
 
-		return {"LIBRARY": library, "TRACKS": tracks}
+		return {"LIBRARY": lib_id, "TRACKS": tracks}
 
 	#----------------------------------------------------------------------
 	def handleRequest(self, data):
@@ -136,60 +143,45 @@ class PlexBrowser:
 						return mapping["FUNC"]()
 
 	#----------------------------------------------------------------------
-	def loadArtists(self, library):
-		for artist in self.plex.library.sectionByID(library).all():
-			new_artist = Artist(*PlexAdapterArtist(artist).toObj())
-			self.content["LIBRARIES"][library].addArtist(new_artist.getId())
-			if new_artist.getId() not in self.content["ARTISTS"].keys():
-				self.content["ARTISTS"][new_artist.getId()] = new_artist
-
-	#----------------------------------------------------------------------
 	def loadAlbumsByArtist(self, library, artist):
-		for album in self.plex.library.sectionByID(library).fetchItem(artist).albums():
-			new_album = Album(*PlexAdapterAlbum(album).toObj())
-			self.content["ARTISTS"][artist].addAlbum(new_album.getId())
-			if new_album.getId() not in self.content["ALBUMS"].keys():
-				self.content["ALBUMS"][new_album.getId()] = new_album
+		for album in self.plex.library.sectionByID(library.getId()).fetchItem(artist.getId()).albums():
+			artist.addAlbum(Album(*PlexAdapterAlbum(album).toObj()))
 
 	#----------------------------------------------------------------------
 	def loadAlbumsByLibrary(self, library):
-		for album in self.plex.library.sectionByID(library).albums():
-			new_album = Album(*PlexAdapterAlbum(album).toObj())
-			self.content["LIBRARIES"][library].addAlbum(new_album.getId())
-			if new_album.getId() not in self.content["ALBUMS"].keys():
-				self.content["ALBUMS"][new_album.getId()] = new_album
+		for album in self.plex.library.sectionByID(library.getId()).albums():
+			library.addAlbum(Album(*PlexAdapterAlbum(album).toObj()))
+
+	#----------------------------------------------------------------------
+	def loadArtists(self, library):
+		for artist in self.plex.library.sectionByID(library.getId()).all():
+			library.addArtist(Artist(*PlexAdapterArtist(artist).toObj()))
 
 	#----------------------------------------------------------------------
 	def loadLibraries(self):
 		for library in self.plex.library.sections():
 			if library.CONTENT_TYPE == Config.get("PLEX", "LIB_TYPE"):
 				new_library = Library(*PlexAdapterLibrary(library).toObj())
-				if new_library.getId() not in self.content["LIBRARIES"].keys():
-					self.content["LIBRARIES"][new_library.getId()] = new_library
+				if not self.getLibrary(new_library.getId()):
+					self.libraries.append(new_library)
 
 	#----------------------------------------------------------------------
-	def loadTracksByAlbum(self, library, album):
-		for track in self.plex.library.sectionByID(library).fetchItem(album).tracks():
-			new_track = Track(*PlexAdapterTrack(track).toObj())
-			self.content["ALBUMS"][album].addTrack(new_track.getId())
-			if new_track.getId() not in self.content["TRACKS"].keys():
-				self.content["TRACKS"][new_track.getId()] = new_track
-
-	#----------------------------------------------------------------------
-	def loadTracksByArtist(self, library, artist):
-		for track in self.plex.library.sectionByID(library).fetchItem(artist).tracks():
-			new_track = Track(*PlexAdapterTrack(track).toObj())
-			self.content["ARTISTS"][artist].addTrack(new_track.getId())
-			if new_track.getId() not in self.content["TRACKS"].keys():
-				self.content["TRACKS"][new_track.getId()] = new_track
+	def loadTracksByParent(self, library, parent):
+		for track in self.plex.library.sectionByID(library.getId()).fetchItem(parent.getId()).tracks():
+			parent.addTrack(Track(*PlexAdapterTrack(track).toObj()))
 
 	#----------------------------------------------------------------------
 	def loadTracksByLibrary(self, library):
-		for track in self.plex.library.sectionByID(library).searchTracks():
-			new_track = Track(*PlexAdapterTrack(track).toObj())
-			self.content["LIBRARIES"][library].addTrack(new_track.getId())
-			if new_track.getId() not in self.content["TRACKS"].keys():
-				self.content["TRACKS"][new_track.getId()] = new_track
+		for track in self.plex.library.sectionByID(library.getId()).searchTracks():
+			library.addTrack(Track(*PlexAdapterTrack(track).toObj()))
+
+	#----------------------------------------------------------------------
+	def mediaObjToDict(self, media):
+		tmp_list = []
+		for item in media:
+			tmp_list.append(item.toDict())
+
+		return tmp_list
 
 	#----------------------------------------------------------------------
 	def setHandlerMap(self):

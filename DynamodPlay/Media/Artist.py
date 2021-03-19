@@ -14,17 +14,19 @@ class Artist:
 
 	#----------------------------------------------------------------------
 	def addAlbum(self, album):
-		if not album in self.albums:
+		if not self.getAlbum(album.getId()):
 			self.albums.append(album)
 	
 	#----------------------------------------------------------------------
 	def addTrack(self, track):
-		if not track in self.tracks:
+		if not self.getTrack(track.getId()):
 			self.tracks.append(track)
 
 	#----------------------------------------------------------------------
-	def getAlbum(self, album):
-		return self.albums[album] if album in self.albums.keys() else None
+	def getAlbum(self, id):
+		for album in self.albums:
+			if album.getId() == id:
+				return album
 
 	#----------------------------------------------------------------------
 	def getAlbums(self):
@@ -59,8 +61,10 @@ class Artist:
 		return self.updated
 
 	#----------------------------------------------------------------------
-	def getTrack(self, track):
-		return self.track[track] if track in self.tracks.keys() else None
+	def getTrack(self, id):
+		for track in self.tracks:
+			if track.getId() == id:
+				return track
 
 	#----------------------------------------------------------------------
 	def getTracks(self):
