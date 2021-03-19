@@ -1,3 +1,4 @@
+from Audio.Vlc               import Vlc
 from Browsers.Plex           import PlexBrowser
 from Config                  import Config
 from Players.PlayerInterface import PlayerInterface
@@ -7,7 +8,6 @@ class NetworkPlayer(PlayerInterface):
 
 	_instance = None
 	key       = "NETWORK"
-	browsers   = None
 
 	#----------------------------------------------------------------------
 	def __new__(cls):
@@ -16,6 +16,9 @@ class NetworkPlayer(PlayerInterface):
 
 			cls.browsers  = [PlexBrowser()]
 			cls.setBrowser(cls, Config.get(cls.getKey(cls), "BROWSER"))
+
+			cls.players   = [Vlc]
+			cls.setPlayer(cls, Config.get(cls.getKey(cls), "PLAYER"))
 
 		return cls._instance
 
@@ -32,12 +35,18 @@ class NetworkPlayer(PlayerInterface):
 		return self.key
 
 	#----------------------------------------------------------------------
+	def getPlayer(self):
+		return self.player
+
+	#----------------------------------------------------------------------
 	def getStatus(self):
 		return
 
 	#----------------------------------------------------------------------
-	def load(self):
-		return
+	def load(self, load):
+		track = self.getBrowser().findMedia(load["TRACK"])
+		self.player_instance = self.player(track.getStream())
+		return {"LOAD": {"PLAYER": self.getKey(), "TRACK": track.getStream(), "IS_PLAYING": self.player_instance.isPlaying()}}
 
 	#----------------------------------------------------------------------
 	def next(self):
@@ -45,7 +54,10 @@ class NetworkPlayer(PlayerInterface):
 
 	#----------------------------------------------------------------------
 	def play(self, play):
-		return
+		if play:
+			return {"LOAD": {"PLAYER": self.getKey(), "IS_PLAYING": self.player_instance.play()}}
+		else:
+			return {"LOAD": {"PLAYER": self.getKey(), "IS_PLAYING": self.player_instance.pause()}}
 
 	#----------------------------------------------------------------------
 	def prev(self):
@@ -69,6 +81,12 @@ class NetworkPlayer(PlayerInterface):
 			if browser_key == browser.getKey():
 				browser.setup()
 				self.browser = browser
+
+	#----------------------------------------------------------------------
+	def setPlayer(self, player_key):
+		for player in self.players:
+			if player_key == player.getKey():
+				self.player = player
 
 	#----------------------------------------------------------------------
 	def shuffle(self, shuffle):

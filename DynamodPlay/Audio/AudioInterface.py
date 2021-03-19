@@ -1,12 +1,7 @@
 from abc import ABC, abstractmethod
 
 ########################################################################
-class PlayerInterface(ABC):
-
-	#----------------------------------------------------------------------
-	@abstractmethod
-	def fforward():
-		pass
+class AudioInterface(ABC):
 
 	#----------------------------------------------------------------------
 	@abstractmethod
@@ -20,12 +15,7 @@ class PlayerInterface(ABC):
 
 	#----------------------------------------------------------------------
 	@abstractmethod
-	def load():
-		pass
-
-	#----------------------------------------------------------------------
-	@abstractmethod
-	def next():
+	def isPlaying():
 		pass
 
 	#----------------------------------------------------------------------
@@ -35,20 +25,10 @@ class PlayerInterface(ABC):
 
 	#----------------------------------------------------------------------
 	@abstractmethod
-	def prev():
+	def pause():
 		pass
 
 	#----------------------------------------------------------------------
 	@abstractmethod
-	def repeat(repeat):
-		pass
-
-	#----------------------------------------------------------------------
-	@abstractmethod
-	def reverse():
-		pass
-
-	#----------------------------------------------------------------------
-	@abstractmethod
-	def shuffle(shuffle):
+	def stop():
 		pass

@@ -8,12 +8,9 @@ from Queue             import Queue
 ########################################################################
 class PlayerController(ControllerInterface):
 
-	_instance     = None
+	_instance = None
 
-	key           = "PLAYER"
-	player_list   = None
-	request_map   = None
-	active_player = None
+	key       = "PLAYER"
 
 	#----------------------------------------------------------------------
 	def __new__(cls):
@@ -47,8 +44,6 @@ class PlayerController(ControllerInterface):
 			if key == player.getKey():
 				return player
 
-		return None
-
 	#----------------------------------------------------------------------
 	def getStatus(self):
 		player_statuses = []
@@ -63,7 +58,14 @@ class PlayerController(ControllerInterface):
 		for key in data.keys():
 			for mapping in self.request_map:
 				if key == mapping["CODE"]:
-					Queue.add("SEND", {self.getKey(): mapping["FUNC"](self, data[key] if mapping["ARGS"] else None)})
+					if mapping["ARGS"]:
+						# TODO: This is ugly AF
+						if mapping["SELF"]:
+							Queue.add("SEND", {self.getKey(): mapping["FUNC"](self, data[key])})
+						else:
+							Queue.add("SEND", {self.getKey(): mapping["FUNC"](data[key])})
+					else:
+						Queue.add("SEND", {self.getKey(): mapping["FUNC"]()})
 
 	#----------------------------------------------------------------------
 	def setActivePlayer(self, player):
@@ -76,13 +78,13 @@ class PlayerController(ControllerInterface):
 	#----------------------------------------------------------------------
 	def setHandlerMap(self):
 		self.request_map = [
-			{"CODE": "LOAD",     "FUNC": self.getActivePlayer(self).load,     "ARGS": True},
-			{"CODE": "PLAY",     "FUNC": self.getActivePlayer(self).play,     "ARGS": True},
-			{"CODE": "NEXT",     "FUNC": self.getActivePlayer(self).next,     "ARGS": False},
-			{"CODE": "PREV",     "FUNC": self.getActivePlayer(self).prev,     "ARGS": False},
-			{"CODE": "FFORWARD", "FUNC": self.getActivePlayer(self).fforward, "ARGS": False},
-			{"CODE": "REWIND",   "FUNC": self.getActivePlayer(self).reverse,  "ARGS": False},
-			{"CODE": "SHUFFLE",  "FUNC": self.getActivePlayer(self).shuffle,  "ARGS": True},
-			{"CODE": "REPEAT",   "FUNC": self.getActivePlayer(self).repeat,   "ARGS": True},
-			{"CODE": "BROWSE",   "FUNC": self.browse,                         "ARGS": True}
+			{"CODE": "LOAD",     "FUNC": self.getActivePlayer(self).load,     "ARGS": True,  "SELF": False},
+			{"CODE": "PLAY",     "FUNC": self.getActivePlayer(self).play,     "ARGS": True,  "SELF": False},
+			{"CODE": "NEXT",     "FUNC": self.getActivePlayer(self).next,     "ARGS": False, "SELF": False},
+			{"CODE": "PREV",     "FUNC": self.getActivePlayer(self).prev,     "ARGS": False, "SELF": False},
+			{"CODE": "FFORWARD", "FUNC": self.getActivePlayer(self).fforward, "ARGS": False, "SELF": False},
+			{"CODE": "REWIND",   "FUNC": self.getActivePlayer(self).reverse,  "ARGS": False, "SELF": False},
+			{"CODE": "SHUFFLE",  "FUNC": self.getActivePlayer(self).shuffle,  "ARGS": True,  "SELF": False},
+			{"CODE": "REPEAT",   "FUNC": self.getActivePlayer(self).repeat,   "ARGS": True,  "SELF": False},
+			{"CODE": "BROWSE",   "FUNC": self.browse,                         "ARGS": True,  "SELF": True}
 		]

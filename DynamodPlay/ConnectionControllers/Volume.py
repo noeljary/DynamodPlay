@@ -6,12 +6,9 @@ from Queue        import Queue
 ########################################################################
 class VolumeController(ControllerInterface):
 
-	_instance    = None
+	_instance = None
 
-	key          = "VOLUME"
-	agent_list   = [PulseAudio()]
-	active_agent = None
-	request_map  = None
+	key       = "VOLUME"
 
 	#----------------------------------------------------------------------
 	def __new__(cls):
@@ -19,6 +16,7 @@ class VolumeController(ControllerInterface):
 			cls._instance = super(VolumeController, cls).__new__(cls)
 
 			# Map Audio Agent
+			cls.agent_list   = [PulseAudio()]
 			agent_cfg = Config.get("VOLUME", "AGENT", "PULSE")
 			for agent in cls.agent_list:
 				if agent_cfg == agent.getAgent():

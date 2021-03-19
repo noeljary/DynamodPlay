@@ -7,7 +7,6 @@ class RadioPlayer(PlayerInterface):
 
 	_instance = None
 	key       = "RADIO"
-	browser   = None
 
 	#----------------------------------------------------------------------
 	def __new__(cls):
