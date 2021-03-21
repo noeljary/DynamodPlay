@@ -1,5 +1,7 @@
 from Config import Config
 
+from Media.Adapters.AudioOffset import AudioOffsets
+
 ########################################################################
 class PlexAdapterLibrary:
 
@@ -50,12 +52,14 @@ class PlexAdapterTrack:
 
 	#----------------------------------------------------------------------
 	def __init__(self, track):
-		self.id       = track.ratingKey
-		self.name     = track.title
-		self.sort     = track.titleSort
-		self.duration = track.duration
-		self.stream   = track.getStreamURL()
+		self.id        = track.ratingKey
+		self.name      = track.title
+		self.sort      = track.titleSort
+		self.duration  = track.duration
+		self.stream    = track.getStreamURL()
+		self.offsetDef = AudioOffsets.plex
 		self.setImg(track)
+		
 
 	#----------------------------------------------------------------------
 	def setImg(self, track):
@@ -72,7 +76,7 @@ class PlexAdapterTrack:
 
 	#----------------------------------------------------------------------
 	def toObj(self):
-		return (self.id, self.name, self.sort, self.duration, self.img, self.stream)
+		return (self.id, self.name, self.sort, self.duration, self.img, self.stream, self.offsetDef)
 
 ########################################################################
 class PlexAdapterImg:

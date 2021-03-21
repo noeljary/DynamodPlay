@@ -4,13 +4,14 @@ import datetime
 class Track:
 
 	#----------------------------------------------------------------------
-	def __init__(self, id, name, sort, duration, img, stream):
+	def __init__(self, id, name, sort, duration, img, stream, offset_def):
 		self.setId(id)
 		self.setName(name)
 		self.setSort(sort)
 		self.setDuration(duration)
 		self.setImg(img)
 		self.setStream(stream)
+		self.setOffsetDef(offset_def)
 
 	#----------------------------------------------------------------------
 	def _convertTimestampToDuration(raw_duration):
@@ -33,6 +34,10 @@ class Track:
 		return self.name
 
 	#----------------------------------------------------------------------
+	def getOffsetDef(self):
+		return self.offset_def
+
+	#----------------------------------------------------------------------
 	def getRawDuration(self):
 		return self.raw_duration
 
@@ -41,8 +46,8 @@ class Track:
 		return self.sort
 
 	#----------------------------------------------------------------------
-	def getStream(self):
-		return self.stream
+	def getStream(self, offset = None):
+		return self.stream if not offset else self.getOffsetDef()(self.stream, offset)
 
 	#----------------------------------------------------------------------
 	def setDuration(self, duration):
@@ -60,6 +65,10 @@ class Track:
 	#----------------------------------------------------------------------
 	def setName(self, name):
 		self.name = name
+
+	#----------------------------------------------------------------------
+	def setOffsetDef(self, offset_def):
+		self.offset_def = offset_def
 
 	#----------------------------------------------------------------------
 	def setSort(self, sort):
