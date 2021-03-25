@@ -1,5 +1,7 @@
+from Media.MediaGroup import MediaGroup
+
 ########################################################################
-class Artist:
+class Artist(MediaGroup):
 
 	#----------------------------------------------------------------------
 	def __init__(self, id, name, sort, img, updated):
@@ -11,26 +13,6 @@ class Artist:
 		self.setSort(sort)
 		self.setImg(img)
 		self.setUpdated(updated)
-
-	#----------------------------------------------------------------------
-	def addAlbum(self, album):
-		if not self.getAlbum(album.getId()):
-			self.albums.append(album)
-	
-	#----------------------------------------------------------------------
-	def addTrack(self, track):
-		if not self.getTrack(track.getId()):
-			self.tracks.append(track)
-
-	#----------------------------------------------------------------------
-	def getAlbum(self, id):
-		for album in self.albums:
-			if album.getId() == id:
-				return album
-
-	#----------------------------------------------------------------------
-	def getAlbums(self):
-		return self.albums
 
 	#----------------------------------------------------------------------
 	def getId(self):
@@ -45,30 +27,12 @@ class Artist:
 		return self.name
 
 	#----------------------------------------------------------------------
-	def getNumAlbums(self):
-		return len(self.albums)
-
-	#----------------------------------------------------------------------
-	def getNumTracks(self):
-		return len(self.tracks)
-
-	#----------------------------------------------------------------------
 	def getSort(self):
 		return self.sort
 
 	#----------------------------------------------------------------------
 	def getUpdated(self):
 		return self.updated
-
-	#----------------------------------------------------------------------
-	def getTrack(self, id):
-		for track in self.tracks:
-			if track.getId() == id:
-				return track
-
-	#----------------------------------------------------------------------
-	def getTracks(self):
-		return self.tracks
 
 	#----------------------------------------------------------------------
 	def setId(self, id):

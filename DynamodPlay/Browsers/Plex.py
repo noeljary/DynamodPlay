@@ -26,14 +26,23 @@ class PlexBrowser:
 	#----------------------------------------------------------------------
 	def findMedia(self, media_ids):
 		keys = media_ids.keys()
+		library = self.getLibrary(media_ids["LIBRARY"])
 		if "ALBUM" in keys and "ARTIST" in keys:
-			return self.getLibrary(media_ids["LIBRARY"]).getArtist(media_ids["ARTIST"]).getAlbum(media_ids["ALBUM"]).getTrack(media_ids["TRACK"])
+			artist = library.getArtist(media_ids["ARTIST"])
+			album  = artist.getAlbum(media_ids["ALBUM"])
+			track  = album.getTrack(media_ids["TRACK"])
+			return [library, artist, album, track]
 		elif "ALBUM" in keys:
-			return self.getLibrary(media_ids["LIBRARY"]).getAlbum(media_ids["ALBUM"]).getTrack(media_ids["TRACK"])
+			album  = library.getAlbum(media_ids["ALBUM"])
+			track  = album.getTrack(media_ids["TRACK"])
+			return [library, album, track]
 		elif "ARTIST" in keys:
-			return self.getLibrary(media_ids["LIBRARY"]).getArtist(media_ids["ARTIST"]).getTrack(media_ids["TRACK"])
+			artist = library.getArtist(media_ids["ARTIST"])
+			track  = album.getTrack(media_ids["TRACK"])
+			return [library, artist, track]
 		elif "LIBRARY" in keys:
-			return self.getLibrary(media_ids["LIBRARY"]).getTrack(media_ids["TRACK"])
+			track  = library.getTrack(media_ids["TRACK"])
+			return [library, track]
 
 	#----------------------------------------------------------------------
 	def getAlbums(self, parents):

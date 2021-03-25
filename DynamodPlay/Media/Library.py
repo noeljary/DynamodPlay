@@ -1,5 +1,7 @@
+from Media.MediaGroup import MediaGroup
+
 ########################################################################
-class Library:
+class Library(MediaGroup):
 
 	#----------------------------------------------------------------------
 	def __init__(self, id, name, updated):
@@ -12,69 +14,12 @@ class Library:
 		self.setUpdated(updated)
 
 	#----------------------------------------------------------------------
-	def addAlbum(self, album):
-		if not self.getAlbum(album.getId()):
-			self.albums.append(album)
-
-	#----------------------------------------------------------------------
-	def addArtist(self, artist):
-		if not self.getArtist(artist.getId()):
-			self.artists.append(artist)
-
-	#----------------------------------------------------------------------
-	def addTrack(self, track):
-		if not self.getTrack(track.getId()):
-			self.tracks.append(track)
-
-	#----------------------------------------------------------------------
-	def getAlbum(self, id):
-		for album in self.albums:
-			if album.getId() == id:
-				return album
-
-	#----------------------------------------------------------------------
-	def getAlbums(self):
-		return self.albums
-
-	#----------------------------------------------------------------------
-	def getArtist(self, id):
-		for artist in self.artists:
-			if artist.getId() == id:
-				return artist
-
-	#----------------------------------------------------------------------
-	def getArtists(self):
-		return self.artists
-
-	#----------------------------------------------------------------------
 	def getId(self):
 		return self.l_id
 
 	#----------------------------------------------------------------------
 	def getName(self):
 		return self.name
-
-	#----------------------------------------------------------------------
-	def getNumAlbums(self):
-		return len(self.albums)
-
-	#----------------------------------------------------------------------
-	def getNumArtists(self):
-		return len(self.artists)
-
-	#----------------------------------------------------------------------
-	def getNumTracks(self):
-		return len(self.tracks)
-
-	#----------------------------------------------------------------------
-	def getTrack(self, id):
-		for track in self.tracks:
-			if track.getId() == id:
-				return track
-
-	#----------------------------------------------------------------------
-	def getTracks(self):
-		return self.tracks
 
 	#----------------------------------------------------------------------
 	def getUpdated(self):

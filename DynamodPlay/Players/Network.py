@@ -21,7 +21,7 @@ class NetworkPlayer(PlayerInterface):
 			cls.players   = [Vlc]
 			cls.setPlayer(cls, Config.get(cls.getKey(cls), "PLAYER"))
 
-			cls.status    = {"TRACK": None, "PATH": {}, "OFFSET": 0, "TIMER_THREAD": None, "SHUFFLE": False, "REPEAT": False}
+			cls.status    = {"PATH": None, "OFFSET": 0, "TIMER_THREAD": None, "SHUFFLE": False, "REPEAT": False}
 
 		return cls._instance
 
@@ -39,7 +39,7 @@ class NetworkPlayer(PlayerInterface):
 
 	#----------------------------------------------------------------------
 	def getPlayStream(self):
-		return self.status["TRACK"].getStream(self.status["OFFSET"])
+		return self.status["PATH"][len(self.status["PATH"]) - 1].getStream(self.status["OFFSET"])
 
 	#----------------------------------------------------------------------
 	def getPlayer(self):
@@ -62,26 +62,40 @@ class NetworkPlayer(PlayerInterface):
 		return {}
 
 	#----------------------------------------------------------------------
-	def load(self, load):
-		# Check for Offset
-		self.status["OFFSET"] = 0 if "OFFSET" not in load.keys() else load["OFFSET"]
+	def load(self, load, track = None):
+		if track:
+			self.status["OFFSET"] = 0
+			self.status["PATH"][len(self.status["PATH"]) - 1] = track
+		else:
+			# Check for Offset
+			self.status["OFFSET"] = 0 if "OFFSET" not in load.keys() else load["OFFSET"]
 
-		# Get Track Object from Media Hierarchy IDs
-		self.status["PATH"]  = load["TRACK"]
-		self.status["TRACK"] = self.getBrowser().findMedia(load["TRACK"])
+			# Get Track Object from Media Hierarchy IDs
+			self.status["PATH"] = self.getBrowser().findMedia(load["TRACK"])
+			track = self.status["PATH"][len(self.status["PATH"]) - 1]
 
 		# Create Player Instance and Start Playing
 		self.player_instance = self.player(self.getPlayStream())
 		self.play(True)
 
 		# Get Track Information for Display
-		metadata = self.getTrackInfo(self.status["TRACK"])
+		metadata = self.getTrackInfo(track)
 
 		return {"LOAD": {"PLAYER": self.getKey(), "IS_PLAYING": self.player_instance.isPlaying(), "METADATA": metadata}}
 
 	#----------------------------------------------------------------------
 	def next(self):
-		return
+		# Stop Current Play
+		self.play(False)
+
+		# Get New Track Details
+		old_track = self.status["PATH"][len(self.status["PATH"]) - 1]
+		track_parent = self.status["PATH"][len(self.status["PATH"]) - 2]
+		new_track = track_parent.getTrackNext(old_track)
+
+		# Load New Track
+		if new_track:
+			self.load(None, new_track)
 
 	#----------------------------------------------------------------------
 	def play(self, play):
@@ -90,11 +104,11 @@ class NetworkPlayer(PlayerInterface):
 			self.player_instance.play()
 
 			# Start Progress Timer Thread
-			self.status["TIMER_THREAD"] = PlayProgress(self.status["TRACK"].getRawDuration(), self.status["OFFSET"],
-				playing       = self.getPlayStream(),
-				callback      = self.updateClient,
+			track = self.status["PATH"][len(self.status["PATH"]) - 1]
+			self.status["TIMER_THREAD"] = PlayProgress(track.getRawDuration(), self.status["OFFSET"],
+				update_client = self.updateClient,
 				is_playing    = self.player_instance.isPlaying,
-				whats_playing = self.getPlayStream
+				is_complete   = self.next
 			)
 		else:
 			# End Timer Thread
@@ -107,7 +121,17 @@ class NetworkPlayer(PlayerInterface):
 
 	#----------------------------------------------------------------------
 	def prev(self):
-		return
+		# Stop Current Play
+		self.play(False)
+
+		# Get New Track Details
+		old_track = self.status["PATH"][len(self.status["PATH"]) - 1]
+		track_parent = self.status["PATH"][len(self.status["PATH"]) - 2]
+		new_track = track_parent.getTrackPrev(old_track)
+
+		# Load New Track
+		if new_track:
+			self.load(None, new_track)
 
 	#----------------------------------------------------------------------
 	def repeat(self, repeat):

@@ -10,18 +10,18 @@ from Config    import Config
 class PlayProgress(Thread):
 
 	#----------------------------------------------------------------------
-	def __init__(self, duration, offset, playing = None, callback = None, is_playing = None, whats_playing = None):
+	def __init__(self, duration, offset, update_client = None, is_playing = None, is_complete = None):
 		Thread.__init__(self)
 		
 		# Setup Timer Configs
-		self.config       = {"DURATION": timedelta(seconds = duration), "OFFSET": timedelta(seconds = offset), "PLAYING": playing}
+		self.config       = {"DURATION": timedelta(seconds = duration), "OFFSET": timedelta(seconds = offset)}
 		self.progress     = timedelta(seconds = 0) + self.config["OFFSET"]
 		self.running      = True
 
 		# Links to Parent Player Functions
 		self.isPlaying    = is_playing
-		self.whatsPlaying = whats_playing
-		self.updateClient = callback
+		self.updateClient = update_client
+		self.isComplete   = is_complete
 
 		# How Often to Send Updates to Client
 		self.update_freq  = int(Config.get("PLAYER", "UPDATE_FREQUENCY"))
@@ -43,6 +43,11 @@ class PlayProgress(Thread):
 			# Send Update to Callback
 			self.updateClient(self.progress.seconds + self.progress.microseconds / 1000000)
 
+		if self.progress + timedelta(seconds = 1 / self.update_freq) >= self.config["DURATION"] and self.isComplete:
+			self.isComplete()
+
+		print("Timer Thread Completed")
+
 	#----------------------------------------------------------------------
 	def terminate(self):
-		self.terminate = False
+		self.running = False

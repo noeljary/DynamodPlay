@@ -1,5 +1,7 @@
+from Media.MediaGroup import MediaGroup
+
 ########################################################################
-class Album:
+class Album(MediaGroup):
 
 	#----------------------------------------------------------------------
 	def __init__(self, id, name, sort, artist, img, year, updated):
@@ -8,18 +10,13 @@ class Album:
 		self.setId(id)
 		self.setName(name)
 		self.setSort(sort)
-		self.setArtist(artist)
+		self.setArtistName(artist)
 		self.setImg(img)
 		self.setYear(year)
 		self.setUpdated(updated)
 
 	#----------------------------------------------------------------------
-	def addTrack(self, track):
-		if not self.getTrack(track.getId()):
-			self.tracks.append(track)
-
-	#----------------------------------------------------------------------
-	def getArtist(self):
+	def getArtistName(self):
 		return self.artist
 
 	#----------------------------------------------------------------------
@@ -35,10 +32,6 @@ class Album:
 		return self.name
 
 	#----------------------------------------------------------------------
-	def getNumTracks(self):
-		return len(self.tracks)
-
-	#----------------------------------------------------------------------
 	def getSort(self):
 		return self.sort
 
@@ -51,17 +44,7 @@ class Album:
 		return self.year
 
 	#----------------------------------------------------------------------
-	def getTrack(self, id):
-		for track in self.tracks:
-			if track.getId() == id:
-				return track
-
-	#----------------------------------------------------------------------
-	def getTracks(self):
-		return self.tracks
-
-	#----------------------------------------------------------------------
-	def setArtist(self, artist):
+	def setArtistName(self, artist):
 		self.artist = artist
 
 	#----------------------------------------------------------------------
@@ -90,5 +73,5 @@ class Album:
 
 	#----------------------------------------------------------------------
 	def toDict(self):
-		return {"ID": self.getId(), "NAME": self.getName(), "IMG": self.getImg(), "SORT": self.getSort(), "ARTIST": self.getArtist(), "YEAR": self.getYear(), "UPDATED": None if not self.getUpdated() else self.getUpdated().strftime("%Y-%m-%d, %H:%M:%S")}
+		return {"ID": self.getId(), "NAME": self.getName(), "IMG": self.getImg(), "SORT": self.getSort(), "ARTIST": self.getArtistName(), "YEAR": self.getYear(), "UPDATED": None if not self.getUpdated() else self.getUpdated().strftime("%Y-%m-%d, %H:%M:%S")}
 	
