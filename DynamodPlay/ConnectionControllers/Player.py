@@ -82,8 +82,8 @@ class PlayerController(ControllerInterface):
 			{"CODE": "PLAY",     "FUNC": self.getActivePlayer(self).play,     "ARGS": True,  "SELF": False},
 			{"CODE": "NEXT",     "FUNC": self.getActivePlayer(self).next,     "ARGS": False, "SELF": False},
 			{"CODE": "PREV",     "FUNC": self.getActivePlayer(self).prev,     "ARGS": False, "SELF": False},
-			{"CODE": "FFORWARD", "FUNC": self.getActivePlayer(self).fforward, "ARGS": False, "SELF": False},
-			{"CODE": "REWIND",   "FUNC": self.getActivePlayer(self).reverse,  "ARGS": False, "SELF": False},
+			{"CODE": "FFORWARD", "FUNC": self.getActivePlayer(self).fforward, "ARGS": True,  "SELF": False},
+			{"CODE": "REWIND",   "FUNC": self.getActivePlayer(self).reverse,  "ARGS": True,  "SELF": False},
 			{"CODE": "SHUFFLE",  "FUNC": self.getActivePlayer(self).shuffle,  "ARGS": True,  "SELF": False},
 			{"CODE": "REPEAT",   "FUNC": self.getActivePlayer(self).repeat,   "ARGS": True,  "SELF": False},
 			{"CODE": "BROWSE",   "FUNC": self.browse,                         "ARGS": True,  "SELF": True}

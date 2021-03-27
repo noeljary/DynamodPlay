@@ -26,8 +26,19 @@ class NetworkPlayer(PlayerInterface):
 		return cls._instance
 
 	#----------------------------------------------------------------------
-	def fforward(self):
-		return
+	def fforward(self, forward):
+		# Stop Current Play
+		self.play(False)
+
+		# Check Durations
+		track = self.getPlayTrack()
+
+		if self.status["OFFSET"] + (forward / 1000) < track.getRawDuration():
+			# Play from New Offset
+			self.load(None, track, self.status["OFFSET"] + (forward / 1000))
+		else:
+			# Play Next
+			self.next()
 
 	#----------------------------------------------------------------------
 	def getBrowser(self):
@@ -38,8 +49,12 @@ class NetworkPlayer(PlayerInterface):
 		return self.key
 
 	#----------------------------------------------------------------------
-	def getPlayStream(self):
-		return self.status["PATH"][len(self.status["PATH"]) - 1].getStream(self.status["OFFSET"])
+	def getPlayTrack(self):
+		return self.status["PATH"][len(self.status["PATH"]) - 1]
+
+	#----------------------------------------------------------------------
+	def getPlayTrackParent(self):
+		return self.status["PATH"][len(self.status["PATH"]) - 2]
 
 	#----------------------------------------------------------------------
 	def getPlayer(self):
@@ -62,9 +77,9 @@ class NetworkPlayer(PlayerInterface):
 		return {}
 
 	#----------------------------------------------------------------------
-	def load(self, load, track = None):
+	def load(self, load, track = None, offset = 0):
 		if track:
-			self.status["OFFSET"] = 0
+			self.status["OFFSET"] = offset
 			self.status["PATH"][len(self.status["PATH"]) - 1] = track
 		else:
 			# Check for Offset
@@ -72,10 +87,10 @@ class NetworkPlayer(PlayerInterface):
 
 			# Get Track Object from Media Hierarchy IDs
 			self.status["PATH"] = self.getBrowser().findMedia(load["TRACK"])
-			track = self.status["PATH"][len(self.status["PATH"]) - 1]
+			track = self.getPlayTrack()
 
 		# Create Player Instance and Start Playing
-		self.player_instance = self.player(self.getPlayStream())
+		self.player_instance = self.player(track.getStream(self.status["OFFSET"]))
 		self.play(True)
 
 		# Get Track Information for Display
@@ -89,9 +104,10 @@ class NetworkPlayer(PlayerInterface):
 		self.play(False)
 
 		# Get New Track Details
-		old_track = self.status["PATH"][len(self.status["PATH"]) - 1]
-		track_parent = self.status["PATH"][len(self.status["PATH"]) - 2]
-		new_track = track_parent.getTrackNext(old_track)
+		old_track    = self.getPlayTrack()
+		track_parent = self.getPlayTrackParent()
+
+		new_track    = track_parent.getTrackNext(old_track)
 
 		# Load New Track
 		if new_track:
@@ -136,11 +152,23 @@ class NetworkPlayer(PlayerInterface):
 	#----------------------------------------------------------------------
 	def repeat(self, repeat):
 		self.status["REPEAT"] = repeat
-		return {"PLAY": {"PLAYER": self.getKey(), "REPEAT": self.status["REPEAT"]}}
+
+		# Cannot Repeat and Shuffle at the same time
+		if repeat and self.status["SHUFFLE"]:
+			self.shuffle(False)
+
+		return {"PLAY": {"PLAYER": self.getKey(), "REPEAT": self.status["REPEAT"], "SHUFFLE": self.status["SHUFFLE"]}}
 
 	#---------------------------------------------------------------------
-	def reverse(self):
-		return
+	def reverse(self, reverse):
+		# Stop Current Play
+		self.play(False)
+
+		# Check Durations
+		offset = self.status["OFFSET"] - (reverse / 1000) if self.status["OFFSET"] - (reverse / 1000) > 0 else 0
+
+		# Play from New Offset
+		self.load(None, self.getPlayTrack(), offset)
 
 	#----------------------------------------------------------------------
 	def setBrowser(self, browser_key):
@@ -158,7 +186,12 @@ class NetworkPlayer(PlayerInterface):
 	#----------------------------------------------------------------------
 	def shuffle(self, shuffle):
 		self.status["SHUFFLE"] = shuffle
-		return {"PLAY": {"PLAYER": self.getKey(), "SHUFFLE": self.status["SHUFFLE"]}}
+
+		# Cannot Shuffle and Repeat at the same time
+		if shuffle and self.status["REPEAT"]:
+			self.repeat(False)
+
+		return {"PLAY": {"PLAYER": self.getKey(), "SHUFFLE": self.status["SHUFFLE"], "REPEAT": self.status["REPEAT"]}}
 
 	#----------------------------------------------------------------------
 	def updateClient(self, progress):
