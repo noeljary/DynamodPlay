@@ -13,6 +13,7 @@ class Vlc(AudioInterface):
 		self.media_list = self.vlc.media_list_new([stream])
 		self.player     = self.vlc.media_list_player_new()
 		self.player.set_media_list(self.media_list)
+		self.playing    = False
 
 	#----------------------------------------------------------------------
 	def getKey():
@@ -24,19 +25,22 @@ class Vlc(AudioInterface):
 
 	#----------------------------------------------------------------------
 	def isPlaying(self):
-		return self.player.is_playing()
+		return self.playing and self.player.is_playing()
 
 	#----------------------------------------------------------------------
 	def play(self):
 		self.player.play()
+		self.playing = True
 		return self.isPlaying()
 
 	#----------------------------------------------------------------------
 	def pause(self):
 		self.player.pause()
+		self.playing = False
 		return self.isPlaying()
 
 	#----------------------------------------------------------------------
 	def stop(self):
 		self.player.stop()
+		self.playing = False
 		return self.isPlaying()

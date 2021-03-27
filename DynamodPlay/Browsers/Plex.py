@@ -38,7 +38,7 @@ class PlexBrowser:
 			return [library, album, track]
 		elif "ARTIST" in keys:
 			artist = library.getArtist(media_ids["ARTIST"])
-			track  = album.getTrack(media_ids["TRACK"])
+			track  = artist.getTrack(media_ids["TRACK"])
 			return [library, artist, track]
 		elif "LIBRARY" in keys:
 			track  = library.getTrack(media_ids["TRACK"])

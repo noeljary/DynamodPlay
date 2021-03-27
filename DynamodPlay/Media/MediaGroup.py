@@ -1,3 +1,5 @@
+import random
+
 ########################################################################
 class MediaGroup:
 
@@ -69,6 +71,10 @@ class MediaGroup:
 			return self.tracks[idx - 1]
 		else:
 			return None
+
+	#----------------------------------------------------------------------
+	def getTrackRnd(self):
+		return self.tracks[random.randint(0, self.getNumTracks() - 1)]
 
 	#----------------------------------------------------------------------
 	def getTracks(self):

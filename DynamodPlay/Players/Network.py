@@ -100,22 +100,31 @@ class NetworkPlayer(PlayerInterface):
 
 	#----------------------------------------------------------------------
 	def next(self):
+		print("Calling Next")
+
 		# Stop Current Play
 		self.play(False)
 
-		# Get New Track Details
+		# Get Current Track Details
 		old_track    = self.getPlayTrack()
 		track_parent = self.getPlayTrackParent()
 
-		new_track    = track_parent.getTrackNext(old_track)
+		# Select New Track
+		if self.status["SHUFFLE"]:
+			new_track = track_parent.getTrackRnd()
+		elif self.status["REPEAT"]:
+			new_track = old_track
+		else:
+			new_track = track_parent.getTrackNext(old_track)
 
+		print("New Track: {}".format(new_track.toDict()))
 		# Load New Track
 		if new_track:
 			self.load(None, new_track)
 
 	#----------------------------------------------------------------------
 	def play(self, play):
-		if play:
+		if play and not self.player_instance.isPlaying():
 			# Play
 			self.player_instance.play()
 
@@ -126,7 +135,7 @@ class NetworkPlayer(PlayerInterface):
 				is_playing    = self.player_instance.isPlaying,
 				is_complete   = self.next
 			)
-		else:
+		elif not play and self.player_instance.isPlaying():
 			# End Timer Thread
 			self.status["TIMER_THREAD"].terminate()
 
@@ -140,10 +149,17 @@ class NetworkPlayer(PlayerInterface):
 		# Stop Current Play
 		self.play(False)
 
-		# Get New Track Details
+		# Get Track Details
 		old_track = self.status["PATH"][len(self.status["PATH"]) - 1]
 		track_parent = self.status["PATH"][len(self.status["PATH"]) - 2]
-		new_track = track_parent.getTrackPrev(old_track)
+
+		# Select New Track
+		if self.status["SHUFFLE"]:
+			new_track = track_parent.getTrackRnd()
+		elif self.status["REPEAT"]:
+			new_track = old_track
+		else:
+			new_track = track_parent.getTrackPrev(old_track)
 
 		# Load New Track
 		if new_track:

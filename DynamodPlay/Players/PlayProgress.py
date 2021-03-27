@@ -14,7 +14,7 @@ class PlayProgress(Thread):
 		Thread.__init__(self)
 		
 		# Setup Timer Configs
-		self.config       = {"DURATION": timedelta(seconds = duration), "OFFSET": timedelta(seconds = offset)}
+		self.config       = {"DURATION": timedelta(milliseconds = duration), "OFFSET": timedelta(seconds = offset)}
 		self.progress     = timedelta(seconds = 0) + self.config["OFFSET"]
 		self.running      = True
 
@@ -43,10 +43,9 @@ class PlayProgress(Thread):
 			# Send Update to Callback
 			self.updateClient(self.progress.seconds + self.progress.microseconds / 1000000)
 
-		if self.progress + timedelta(seconds = 1 / self.update_freq) >= self.config["DURATION"] and self.isComplete:
+		# Move to Next Media Where Possible
+		if self.progress + timedelta(seconds = self.update_freq * (1 / self.update_freq)) >= self.config["DURATION"] and self.isComplete:
 			self.isComplete()
-
-		print("Timer Thread Completed")
 
 	#----------------------------------------------------------------------
 	def terminate(self):
