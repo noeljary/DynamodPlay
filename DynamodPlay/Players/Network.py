@@ -28,7 +28,7 @@ class NetworkPlayer(PlayerInterface):
 			cls.players   = [Vlc]
 			cls.setPlayer(cls, Config.get(cls.getKey(cls), "PLAYER"))
 
-			cls.status    = {"PATH": None, "OFFSET": 0, "TIMER_THREAD": None, "SHUFFLE": False, "REPEAT": False}
+			cls.status    = {"PATH": None, "OFFSET": 0, "TIMER_THREAD": None, "SHUFFLE": False, "REPEAT": False, "OPTIONS": ["SHUFFLE", "REPEAT", "XFER", "BCAST"]}
 			cls.re_meta   = re.compile(r"^([A-z]+\s*[0-9]+[\s\-]*)+(.*)$")
 
 		return cls._instance
@@ -78,7 +78,14 @@ class NetworkPlayer(PlayerInterface):
 
 	#----------------------------------------------------------------------
 	def getStatus(self):
-		return
+		status = {"PLAYER": self.getKey(), "OPTIONS": self.status["OPTIONS"]}
+
+		# If Playing or Has Played
+		if self.status["PATH"]:
+			status["IS_PLAYING"] = self.player_instance.isPlaying()
+			status["METADATA"]   = self.getTrackInfo()
+
+		return {"STATUS": status}
 
 	#----------------------------------------------------------------------
 	def getTrackInfo(self):
@@ -101,7 +108,7 @@ class NetworkPlayer(PlayerInterface):
 				meta["TITLE2"] = track.getArtistName()
 		elif len(title_split.groups()) == 2:
 			# Probably Audio Book with Chapter Name
-			meta["TITLE"] = title_split.groups[1]
+			meta["TITLE"]  = title_split.groups[1]
 			meta["TITLE2"] = parent.getName()
 			meta["TITLE3"] = parent.getArtistName()
 		elif len(title_split.groups()) == 1:
@@ -110,16 +117,16 @@ class NetworkPlayer(PlayerInterface):
 			meta["TITLE2"] = parent.getArtistName()			
 
 		# Track X of Y
-		meta["TRACK_NUM"] = parent.getTrackNum(track)
+		meta["TRACK_NUM"]  = parent.getTrackNum(track)
 		meta["NUM_TRACKS"] = parent.getNumTracks()
 
 		# Album Art
 		meta["IMAGE"] = track.getImg()
 
 		# Playback Progress
-		meta["DURATION"] = track.getDuration()
+		meta["DURATION"]     = track.getDuration()
 		meta["RAW_DURATION"] = track.getRawDuration()
-		meta["POSITION"] = datetime.datetime.fromtimestamp(self.status["OFFSET"]).strftime("%H:%M:%S" if self.status["OFFSET"] >= 3600 else "%M:%S")
+		meta["POSITION"]     = datetime.datetime.fromtimestamp(self.status["OFFSET"]).strftime("%H:%M:%S" if self.status["OFFSET"] >= 3600 else "%M:%S")
 
 		return meta
 
@@ -143,7 +150,7 @@ class NetworkPlayer(PlayerInterface):
 		# Get Track Information for Display
 		metadata = self.getTrackInfo()
 
-		return {"LOAD": {"PLAYER": self.getKey(), "IS_PLAYING": self.player_instance.isPlaying(), "METADATA": metadata}}
+		return {"LOAD": {"PLAYER": self.getKey(), "IS_PLAYING": self.player_instance.isPlaying(), "METADATA": metadata, "OPTIONS": self.status["OPTIONS"]}}
 
 	#----------------------------------------------------------------------
 	def next(self):

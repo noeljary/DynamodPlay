@@ -49,9 +49,9 @@ class PlayerController(ControllerInterface):
 		player_statuses = []
 
 		for player in self.player_list:
-			player_statuses.append(player.getStatus())
+			player_statuses.append({player.getKey(): player.getStatus()})
 		
-		return player_statuses
+		return {"PLAYERS": player_statuses}
 
 	#----------------------------------------------------------------------
 	def handleRequest(self, data):
