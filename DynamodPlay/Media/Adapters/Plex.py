@@ -55,6 +55,7 @@ class PlexAdapterTrack:
 		self.id        = track.ratingKey
 		self.name      = track.title
 		self.sort      = track.titleSort
+		self.artist    = track.artist().title
 		self.duration  = track.duration
 		self.stream    = track.getStreamURL()
 		self.offsetDef = AudioOffsets.plex
@@ -76,7 +77,7 @@ class PlexAdapterTrack:
 
 	#----------------------------------------------------------------------
 	def toObj(self):
-		return (self.id, self.name, self.sort, self.duration, self.img, self.stream, self.offsetDef)
+		return (self.id, self.name, self.sort, self.artist, self.duration, self.img, self.stream, self.offsetDef)
 
 ########################################################################
 class PlexAdapterImg:

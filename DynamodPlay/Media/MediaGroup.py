@@ -65,6 +65,10 @@ class MediaGroup:
 			return None
 
 	#----------------------------------------------------------------------
+	def getTrackNum(self, track):
+		return self.tracks.index(track) + 1
+
+	#----------------------------------------------------------------------
 	def getTrackPrev(self, track):
 		idx = self.tracks.index(track)
 		if idx > 0:

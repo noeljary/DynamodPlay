@@ -1,8 +1,15 @@
+import datetime
+import re
+
 from Audio.Vlc               import Vlc
 from Browsers.Plex           import PlexBrowser
 from Config                  import Config
+from Media.Album             import Album
+from Media.Artist            import Artist
+from Media.Library           import Library
 from Players.PlayerInterface import PlayerInterface
 from Players.PlayProgress    import PlayProgress
+from Queue                   import Queue
 
 ########################################################################
 class NetworkPlayer(PlayerInterface):
@@ -22,6 +29,7 @@ class NetworkPlayer(PlayerInterface):
 			cls.setPlayer(cls, Config.get(cls.getKey(cls), "PLAYER"))
 
 			cls.status    = {"PATH": None, "OFFSET": 0, "TIMER_THREAD": None, "SHUFFLE": False, "REPEAT": False}
+			cls.re_meta   = re.compile(r"^([A-z]+\s*[0-9]+[\s\-]*)+(.*)$")
 
 		return cls._instance
 
@@ -73,8 +81,47 @@ class NetworkPlayer(PlayerInterface):
 		return
 
 	#----------------------------------------------------------------------
-	def getTrackInfo(self, track):
-		return {}
+	def getTrackInfo(self):
+		meta   = {}
+		track  = self.getPlayTrack()
+		parent = self.getPlayTrackParent()
+
+		# Titles
+		title_split = self.re_meta.match(track.getName())
+
+		if not title_split:
+			# Probably Music or Radio Play
+			meta["TITLE"] = track.getName()
+			if isinstance(parent, Album):
+				meta["TITLE2"] = parent.getName()
+				meta["TITLE3"] = parent.getArtistName()
+			elif isinstance(parent, Artist):
+				meta["TITLE2"] = parent.getName()
+			elif isinstance(parent, Library):
+				meta["TITLE2"] = track.getArtistName()
+		elif len(title_split.groups()) == 2:
+			# Probably Audio Book with Chapter Name
+			meta["TITLE"] = title_split.groups[1]
+			meta["TITLE2"] = parent.getName()
+			meta["TITLE3"] = parent.getArtistName()
+		elif len(title_split.groups()) == 1:
+			# Probably Audio Book
+			meta["TITLE"] = parent.getName()
+			meta["TITLE2"] = parent.getArtistName()			
+
+		# Track X of Y
+		meta["TRACK_NUM"] = parent.getTrackNum(track)
+		meta["NUM_TRACKS"] = parent.getNumTracks()
+
+		# Album Art
+		meta["IMAGE"] = track.getImg()
+
+		# Playback Progress
+		meta["DURATION"] = track.getDuration()
+		meta["RAW_DURATION"] = track.getRawDuration()
+		meta["POSITION"] = datetime.datetime.fromtimestamp(self.status["OFFSET"]).strftime("%H:%M:%S" if self.status["OFFSET"] >= 3600 else "%M:%S")
+
+		return meta
 
 	#----------------------------------------------------------------------
 	def load(self, load, track = None, offset = 0):
@@ -94,14 +141,12 @@ class NetworkPlayer(PlayerInterface):
 		self.play(True)
 
 		# Get Track Information for Display
-		metadata = self.getTrackInfo(track)
+		metadata = self.getTrackInfo()
 
 		return {"LOAD": {"PLAYER": self.getKey(), "IS_PLAYING": self.player_instance.isPlaying(), "METADATA": metadata}}
 
 	#----------------------------------------------------------------------
 	def next(self):
-		print("Calling Next")
-
 		# Stop Current Play
 		self.play(False)
 
@@ -117,7 +162,6 @@ class NetworkPlayer(PlayerInterface):
 		else:
 			new_track = track_parent.getTrackNext(old_track)
 
-		print("New Track: {}".format(new_track.toDict()))
 		# Load New Track
 		if new_track:
 			self.load(None, new_track)
@@ -211,6 +255,14 @@ class NetworkPlayer(PlayerInterface):
 
 	#----------------------------------------------------------------------
 	def updateClient(self, progress):
-		print(progress)
+		# Update Player with Playback Progress
 		self.status["OFFSET"] = progress
-		return
+
+		# Assemble Duration Details
+		track              = self.getPlayTrack()
+		duration_formatted = track.getDuration()
+		duration_raw       = track.getRawDuration()
+		progress_formatted = datetime.datetime.fromtimestamp(progress / 1000).strftime("%H:%M:%S" if progress >= 3600000 else "%M:%S")
+		percentage_played  = round((progress / duration_raw) * 100, 2)
+
+		Queue.add("SEND", {"PLAYER": {"PROGRESS": {"POSITION": progress_formatted, "PERCENTAGE": percentage_played, "DURATION": duration_formatted, "RAW_DURATION": duration_raw}}})

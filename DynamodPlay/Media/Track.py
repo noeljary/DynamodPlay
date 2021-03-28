@@ -4,10 +4,11 @@ import datetime
 class Track:
 
 	#----------------------------------------------------------------------
-	def __init__(self, id, name, sort, duration, img, stream, offset_def):
+	def __init__(self, id, name, sort, artist, duration, img, stream, offset_def):
 		self.setId(id)
 		self.setName(name)
 		self.setSort(sort)
+		self.setArtist(artist)
 		self.setDuration(duration)
 		self.setImg(img)
 		self.setStream(stream)
@@ -16,6 +17,10 @@ class Track:
 	#----------------------------------------------------------------------
 	def _convertTimestampToDuration(raw_duration):
 		return datetime.datetime.fromtimestamp(raw_duration / 1000).strftime("%H:%M:%S" if raw_duration >= 3600000 else "%M:%S")
+
+	#----------------------------------------------------------------------
+	def getArtist(self):
+		return self.artist
 
 	#----------------------------------------------------------------------
 	def getDuration(self):
@@ -48,6 +53,10 @@ class Track:
 	#----------------------------------------------------------------------
 	def getStream(self, offset = None):
 		return self.stream if not offset else self.getOffsetDef()(self.stream, offset)
+
+	#----------------------------------------------------------------------
+	def setArtist(self, artist):
+		self.artist = artist
 
 	#----------------------------------------------------------------------
 	def setDuration(self, duration):

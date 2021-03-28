@@ -41,7 +41,7 @@ class PlayProgress(Thread):
 			self.progress += timedelta(seconds = 1 / self.update_freq)
 
 			# Send Update to Callback
-			self.updateClient(self.progress.seconds + self.progress.microseconds / 1000000)
+			self.updateClient((self.progress.seconds * 1000) + (self.progress.microseconds / 1000))
 
 		# Move to Next Media Where Possible
 		if self.progress + timedelta(seconds = self.update_freq * (1 / self.update_freq)) >= self.config["DURATION"] and self.isComplete:
