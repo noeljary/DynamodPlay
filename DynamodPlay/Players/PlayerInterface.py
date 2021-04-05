@@ -5,7 +5,7 @@ class PlayerInterface(ABC):
 
 	#----------------------------------------------------------------------
 	@abstractmethod
-	def fforward():
+	def fforward(forward):
 		pass
 
 	#----------------------------------------------------------------------
@@ -45,10 +45,15 @@ class PlayerInterface(ABC):
 
 	#----------------------------------------------------------------------
 	@abstractmethod
-	def reverse():
+	def reverse(reverse):
 		pass
 
 	#----------------------------------------------------------------------
 	@abstractmethod
 	def shuffle(shuffle):
+		pass
+
+	#----------------------------------------------------------------------
+	@abstractmethod
+	def updateClientProg():
 		pass

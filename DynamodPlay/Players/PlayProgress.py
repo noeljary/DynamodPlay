@@ -10,7 +10,7 @@ from Config    import Config
 class PlayProgress(Thread):
 
 	#----------------------------------------------------------------------
-	def __init__(self, duration, offset, update_client = None, is_playing = None, is_complete = None):
+	def __init__(self, duration = 0, offset = 0, update_client = None, is_playing = None, is_complete = None):
 		Thread.__init__(self)
 		
 		# Setup Timer Configs

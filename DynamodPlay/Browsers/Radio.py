@@ -23,13 +23,35 @@ class RadioBrowser:
 		return self.key
 
 	#----------------------------------------------------------------------
+	def getNextStation(self, station):
+		idx = self.station_list.index(station)
+		if idx + 1 < len(self.station_list):
+			return self.station_list[idx + 1]
+		else:
+			return None
+
+	#----------------------------------------------------------------------
+	def getPrevStation(self, station):
+		idx = self.station_list.index(station)
+		if idx > 0:
+			return self.station_list[idx - 1]
+		else:
+			return None
+
+	#----------------------------------------------------------------------
+	def getStation(self, id):
+		for station in self.station_list:
+			if station.getId() == id:
+				return station
+
+	#----------------------------------------------------------------------
 	def getStations(self):
 		if not self.station_list:
 			self.loadStations()
 
 		stations = []
 		for station in self.station_list:
-			stations.append(self.station_list[station].toDict())
+			stations.append(station.toDict())
 
 		return {"STATIONS": stations}
 
@@ -51,7 +73,7 @@ class RadioBrowser:
 		for station in station_list:
 			new_station = Station(*LocalRadioAdapterStation(station).toObj())
 			if new_station not in self.station_list:
-				self.station_list[new_station.getId()] = new_station
+				self.station_list.append(new_station)
 
 	#----------------------------------------------------------------------
 	def setHandlerMap(self):
@@ -61,5 +83,5 @@ class RadioBrowser:
 
 	#----------------------------------------------------------------------
 	def setup(self):
-		self.station_list = {}
+		self.station_list = []
 		self.setHandlerMap()

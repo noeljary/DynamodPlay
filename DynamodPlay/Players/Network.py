@@ -27,6 +27,7 @@ class NetworkPlayer(PlayerInterface):
 
 			cls.players   = [Vlc]
 			cls.setPlayer(cls, Config.get(cls.getKey(cls), "PLAYER"))
+			cls.player_instance = None
 
 			cls.status    = {"PATH": None, "OFFSET": 0, "TIMER_THREAD": None, "SHUFFLE": False, "REPEAT": False, "OPTIONS": ["SHUFFLE", "REPEAT", "XFER", "BCAST"]}
 			cls.re_meta   = re.compile(r"^([A-z]+\s*[0-9]+[\s\-]*)+(.*)$")
@@ -171,18 +172,21 @@ class NetworkPlayer(PlayerInterface):
 
 		# Load New Track
 		if new_track:
-			self.load(None, new_track)
+			return self.load(None, new_track)
 
 	#----------------------------------------------------------------------
 	def play(self, play):
+		if not self.player_instance:
+			return
+
 		if play and not self.player_instance.isPlaying():
 			# Play
 			self.player_instance.play()
 
 			# Start Progress Timer Thread
-			track = self.status["PATH"][len(self.status["PATH"]) - 1]
+			track = self.getPlayTrack()
 			self.status["TIMER_THREAD"] = PlayProgress(track.getRawDuration(), self.status["OFFSET"],
-				update_client = self.updateClient,
+				update_client = self.updateClientProg,
 				is_playing    = self.player_instance.isPlaying,
 				is_complete   = self.next
 			)
@@ -201,8 +205,8 @@ class NetworkPlayer(PlayerInterface):
 		self.play(False)
 
 		# Get Track Details
-		old_track = self.status["PATH"][len(self.status["PATH"]) - 1]
-		track_parent = self.status["PATH"][len(self.status["PATH"]) - 2]
+		old_track = self.getPlayTrack()
+		track_parent = self.getPlayTrackParent()
 
 		# Select New Track
 		if self.status["SHUFFLE"]:
@@ -214,7 +218,7 @@ class NetworkPlayer(PlayerInterface):
 
 		# Load New Track
 		if new_track:
-			self.load(None, new_track)
+			return self.load(None, new_track)
 
 	#----------------------------------------------------------------------
 	def repeat(self, repeat):
@@ -261,7 +265,7 @@ class NetworkPlayer(PlayerInterface):
 		return {"PLAY": {"PLAYER": self.getKey(), "SHUFFLE": self.status["SHUFFLE"], "REPEAT": self.status["REPEAT"]}}
 
 	#----------------------------------------------------------------------
-	def updateClient(self, progress):
+	def updateClientProg(self, progress):
 		# Update Player with Playback Progress
 		self.status["OFFSET"] = progress
 

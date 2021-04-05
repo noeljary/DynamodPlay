@@ -1,23 +1,168 @@
 [
-	{"KEY": "ACR", "NAME": "Absolute Classic Rock", "STREAM": "", "IMG": "png"},
-	{"KEY": "B1X", "NAME": "BBC Radio 1Xtra", "STREAM": "", "IMG": "png"},
-	{"KEY": "B4D", "NAME": "BBC Radio 4", "STREAM": "", "IMG": "png"},
-	{"KEY": "B4L", "NAME": "BBC Radio 4 LW", "STREAM": "", "IMG": "jpg"},
-	{"KEY": "B4X", "NAME": "BBC Radio 4Xtra", "STREAM": "", "IMG": "jpg"},
-	{"KEY": "B5L", "NAME": "BBC Radio 5 Live", "STREAM": "", "IMG": "jpg"},
-	{"KEY": "B5S", "NAME": "BBC Radio 5 Live Sports Extra", "STREAM": "", "IMG": "jpg"},
-	{"KEY": "BBR", "NAME": "BBC Radio Bristol", "STREAM": "", "IMG": "png"},
-	{"KEY": "BLN", "NAME": "BBC Radio London", "STREAM": "", "IMG": "jpg"},
-	{"KEY": "BR1", "NAME": "BBC Radio 1", "STREAM": "", "IMG": "jpg"},
-	{"KEY": "BR2", "NAME": "BBC Radio 2", "STREAM": "", "IMG": "jpg"},
-	{"KEY": "BR3", "NAME": "BBC Radio 3", "STREAM": "", "IMG": "png"},
-	{"KEY": "CLA", "NAME": "Classic FM", "STREAM": "", "IMG": "png"},
-	{"KEY": "GLN", "NAME": "Gold FM", "STREAM": "", "IMG": "png"},
-	{"KEY": "HBR", "NAME": "Heart Radio Bristol", "STREAM": "", "IMG": "png"},
-	{"KEY": "HLN", "NAME": "Heart Radio London", "STREAM": "", "IMG": "png"},
-	{"KEY": "JAZ", "NAME": "Jazz FM", "STREAM": "", "IMG": "png"},
-	{"KEY": "LLN", "NAME": "LBC", "STREAM": "", "IMG": "jpg"},
-	{"KEY": "LNL", "NAME": "LBC", "STREAM": "", "IMG": "jpg"},
-	{"KEY": "LNU", "NAME": "LBC", "STREAM": "", "IMG": "jpg"},
-	{"KEY": "LUK", "NAME": "LBC", "STREAM": "", "IMG": "jpg"}
+	{
+		"KEY": "ACR",
+		"NAME": "Absolute Classic Rock",
+		"STREAM": "http://edge-bauerabsolute-14-gos1.sharp-stream.com/absoluteclassicrockhigh.aac",
+		"IMG": "png"
+	},
+	{
+		"KEY": "BR1",
+		"NAME": "BBC Radio 1",
+		"STREAM": "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_one/format/pls.pls",
+		"IMG": "jpg"
+	},
+	{
+		"KEY": "B1X",
+		"NAME": "BBC Radio 1Xtra",
+		"STREAM": "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_1xtra/format/pls.pls",
+		"IMG": "png"
+	},
+	{
+		"KEY": "BR2",
+		"NAME": "BBC Radio 2",
+		"STREAM": "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_two/format/pls.pls",
+		"IMG": "jpg"
+	},
+	{
+		"KEY": "BR3",
+		"NAME": "BBC Radio 3",
+		"STREAM": "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_three/format/pls.pls",
+		"IMG": "png"
+	},
+	{
+		"KEY": "B4D",
+		"NAME": "BBC Radio 4",
+		"STREAM": "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_fourfm/format/pls.pls",
+		"IMG": "png"
+	},
+	{
+		"KEY": "B4L",
+		"NAME": "BBC Radio 4 LW",
+		"STREAM": "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_fourlw/format/pls.pls",
+		"IMG": "jpg"
+	},
+	{
+		"KEY": "B4X",
+		"NAME": "BBC Radio 4Xtra",
+		"STREAM": "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_four_extra/format/pls.pls",
+		"IMG": "jpg"
+	},
+	{
+		"KEY": "B5L",
+		"NAME": "BBC Radio 5 Live",
+		"STREAM": "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_five_live/format/pls.pls",
+		"IMG": "jpg"
+	},
+	{
+		"KEY": "B5S",
+		"NAME": "BBC Radio 5 Live Sports Extra",
+		"STREAM": "http://www.radiofeeds.co.uk/bbc5livesportsextra.pls",
+		"IMG": "jpg"
+	},
+	{
+		"KEY": "BBR",
+		"NAME": "BBC Radio Bristol",
+		"STREAM": "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_radio_bristol/format/pls.pls",
+		"IMG": "png"
+	},
+	{
+		"KEY": "BLN",
+		"NAME": "BBC Radio London",
+		"STREAM": "http://open.live.bbc.co.uk/mediaselector/5/select/version/2.0/mediaset/http-icy-mp3-a/vpid/bbc_london/format/pls.pls",
+		"IMG": "jpg"
+	},
+	{
+		"KEY": "CLA",
+		"NAME": "Classic FM",
+		"STREAM": "http://icecast.thisisdax.com/ClassicFMMP3.m3u",
+		"IMG": "png",
+		"METADATA" : {
+			"TYPE": "STREAM",
+			"STREAM": {
+				"REGEX": "\\'(.*[^-])( - )+([^\\';]*)",
+				"ARTIST_GRP": 1,
+				"TRACK_GRP": 3
+			}
+		}
+	},
+	{
+		"KEY": "GLN",
+		"NAME": "Gold FM",
+		"STREAM": "http://icecast.thisisdax.com/GoldMP3.m3u",
+		"IMG": "png",
+		"METADATA" : {
+			"TYPE": "STREAM",
+			"STREAM": {
+				"REGEX": "\\'(.*[^-])( - )+([^\\';]*)",
+				"ARTIST_GRP": 1,
+				"TRACK_GRP": 3
+			}
+		}
+	},
+	{
+		"KEY": "HBR",
+		"NAME": "Heart Radio Bristol",
+		"STREAM": "http://icecast.thisisdax.com/HeartBristolMP3.m3u",
+		"IMG": "png",
+		"METADATA" : {
+			"TYPE": "STREAM",
+			"STREAM": {
+				"REGEX": "\\'(.*[^-])( - )+([^\\';]*)",
+				"ARTIST_GRP": 1,
+				"TRACK_GRP": 3
+			}
+		}
+	},
+	{
+		"KEY": "HLN",
+		"NAME": "Heart Radio London",
+		"STREAM": "http://icecast.thisisdax.com/HeartLondonMP3",
+		"IMG": "png",
+		"METADATA" : {
+			"TYPE": "STREAM",
+			"STREAM": {
+				"REGEX": "\\'(.*[^-])( - )+([^\\';]*)",
+				"ARTIST_GRP": 1,
+				"TRACK_GRP": 3
+			}
+		}
+	},
+	{
+		"KEY": "JAZ",
+		"NAME": "Jazz FM",
+		"STREAM": "http://tx.planetradio.co.uk/icecast.php?i=jazzhigh.aac",
+		"IMG": "png",
+		"METADATA" : {
+			"TYPE": "STREAM",
+			"STREAM": {
+				"REGEX": "\\'(.*[^-])( - )+([^\\';]*)",
+				"ARTIST_GRP": 1,
+				"TRACK_GRP": 3
+			}
+		}
+	},
+	{
+		"KEY": "LLN",
+		"NAME": "LBC London",
+		"STREAM": "http://icecast.thisisdax.com/LBCLondon.m3u",
+		"IMG": "jpg"
+	},
+	{
+		"KEY": "LNL",
+		"NAME": "LBC News London",
+		"STREAM": "http://icecast.thisisdax.com/LBCNewsLondon.m3u",
+		"IMG": "jpg"
+	},
+	{
+		"KEY": "LNU",
+		"NAME": "LBC News UK",
+		"STREAM": "http://icecast.thisisdax.com/LBCNewsUKMP3.m3u",
+		"IMG": "jpg"
+	},
+	{
+		"KEY": "LUK",
+		"NAME": "LBC UK",
+		"STREAM": "http://icecast.thisisdax.com/LBCUK.m3u",
+		"IMG": "jpg"
+	}
 ]

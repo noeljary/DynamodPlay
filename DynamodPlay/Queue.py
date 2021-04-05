@@ -23,7 +23,7 @@ class Queue:
 				msg = Queue.queues[queue].popleft()
 				return msg
 			except IndexError:
-				await asyncio.sleep(0.001)
+				await asyncio.sleep(0.01)
 
 	#---------------------------------------------------------------------------
 	def add(queue, value):
@@ -35,4 +35,4 @@ class Queue:
 			try:
 				return Queue.queues[queue].popleft()
 			except IndexError:
-				time.sleep(0.001)
+				time.sleep(0.01)

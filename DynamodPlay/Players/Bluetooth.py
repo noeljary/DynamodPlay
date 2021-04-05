@@ -56,3 +56,7 @@ class BluetoothPlayer(PlayerInterface):
 	#----------------------------------------------------------------------
 	def shuffle(self, shuffle):
 		return
+
+	#----------------------------------------------------------------------
+	def updateClientProg(self, progress):
+		return
